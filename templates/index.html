@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #dddddd;
+          padding: 8px;
+          text-align: left;
+        }
+        th {
+          background-color: #dddddd;
+        }
+        .running {
+          color: green;
+        }
+        .stopped {
+          background-color: red;
+        }
+    </style>
+    <script>
+      function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("NodeListTable");
+        tr = table.getElementsByTagName("tr");
+      
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[1];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body>
+  <h1>Registrer en ny Node</h1>
+  <form action="/install" method="POST">
+    <table style="width: 50%;">
+      <tr>
+        <td style="text-align: right;"><label for="brand">Brand:</label></td>
+        <td>
+          <input type="radio" id="win" name="brand" value="win">
+          <label for="win">Win</label><br>
+        
+          <input type="radio" id="green" name="brand" value="green">
+          <label for="green">Green</label><br>
+        
+          <input type="radio" id="switch" name="brand" value="switch">
+          <label for="switch">Switch</label><br>
+        
+          <input type="radio" id="element" name="brand" value="element">
+          <label for="element">Element</label><br>
+        
+          <input type="radio" id="galvan" name="brand" value="galvan">
+          <label for="galvan">Galvan</label>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right;"><label for="user">Brukernavn:</label></td>
+        <td>
+          <select id="userSel" name="userSel" onchange="filterByUser()">
+            <option>-- VELG BRUKER --</option>
+            {% for service in services %}
+              <option value="{{ service.name }}">{{ service.name }}</option>
+            {% endfor %}
+          </select><br>Eller opprett ny bruker:<br><input id="user" type="text" name="user">&nbsp;(Ikke bruk bindestrek eller mellomrom)
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: right;"><label for="email">E-post:</label></td>
+        <td><input id="email" type="text" name="email"></td>
+      </tr>
+      <tr>
+        <td style="text-align: right;"><label for="password">Passord:</label></td>
+        <td><input id="password" type="password" name="password"></td>
+      </tr>
+      <tr>
+        <td style="text-align: right;"><label for="nodeindex">Nodenummer:</label></td>
+        <td><input id="nodeindex" type="text" name="nodeindex"></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <input type="submit" value="Installer">
+        </td>
+      </tr>
+    </table>
+  </form>
+  <h1>Installerte Noder</h1>
+  <table id="NodeListTable">
+      <tr>
+      <th>#</th>
+      <th>Navn&nbsp;<input type="text" id="userSearch" onkeyup="filterByUser()" placeholder="Søk.." size="10"></th>
+      <th>Node</th>
+      <th>Indeks</th>
+      <th>Loaded</th>
+      <th>Active</th>
+      <th>Oppetid</th>
+      <th>Statusmelding</th>
+      <th><form action="/stopall" method="POST">
+        <input type="submit" value="Stopp alle">
+      </form></th>
+      <th><form action="/restartall" method="POST">
+        <input type="submit" value="Restart alle">
+      </form></th>
+      <th>Slett</th>
+      </tr>
+      {% for service in services %}
+      <tr class="{{ 'stopped' if service.active != 'Running' }}">
+      <td>{{ service.row }}</td>
+      <td>{{ service.name }}</td>
+      <td>{{ service.node }}</td>
+      <td>{{ service.index }}</td>
+      <td>{{ service.loaded }}</td>
+      <td class="{{ 'running' if service.active == 'Running' }}">{{ service.active }}</td>
+      <td>{{ service.uptime }}</td>
+      <td>{{ service.log }}</td>
+      <td>
+        <form action="/stop/{{ service.service_name }}" method="post">
+          <input type="submit" value="Stop">
+        </form>
+      </td>
+      <td>
+        <form action="/restart/{{ service.service_name }}" method="post">
+          <input type="submit" value="Restart">
+        </form>
+      </td>
+      <td>
+        <form action="/delete/{{ service.node }}/{{ service.name }}/{{ service.index }}" method="post">
+          <input type="submit" value="Slett">
+        </form>
+      </td>
+      </tr>
+      {% endfor %}
+  </table>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var dropdown = document.getElementById("userSel");
+      var options = dropdown.options;
+      var uniqueValues = new Set();
+      
+      // Finn alle unike verdier og fjern de eksisterende alternativene
+      for (var i = options.length - 1; i >= 0; i--) {
+        var option = options[i];
+        if (uniqueValues.has(option.value)) {
+          dropdown.remove(i);
+        } else {
+          uniqueValues.add(option.value);
+        }
+      }
+    });
+
+  function filterByUser() {
+    var userDropdown = document.getElementById("userSel");
+    var userFilter = userDropdown.value;
+    var searchInput = document.getElementById("userSearch");
+    var searchFilter = searchInput.value.toUpperCase();
+    var table = document.getElementById("NodeListTable");
+    var tr = table.getElementsByTagName("tr");
+
+    for (var i = 0; i < tr.length; i++) {
+      var userTd = tr[i].getElementsByTagName("td")[1];
+      var searchTd = tr[i].getElementsByTagName("td")[1];
+      if (userTd && searchTd) {
+        var userTxtValue = userTd.textContent || userTd.innerText;
+        var searchTxtValue = searchTd.textContent || searchTd.innerText;
+        if ((userFilter === "-- VELG BRUKER --" || userTxtValue === userFilter) &&
+            searchTxtValue.toUpperCase().indexOf(searchFilter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+
+  </script>
+</body>
+</html>
