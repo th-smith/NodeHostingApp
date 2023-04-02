@@ -1,3 +1,4 @@
+# Copyright (C) 2023 Tommy H. Smith
 from flask import Flask, render_template, request, redirect
 from dateutil.parser import parse
 import subprocess

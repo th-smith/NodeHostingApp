@@ -55,8 +55,9 @@ rm -f $node
 wget --continue "$download_url" --output-document "$node" --quiet
 chmod +x "$node"
 
-#Configure
+#Configure and remove input file after use.
 sudo -u $username $expectfile
+rm $expectfile
 
 #Create service
 cat >"/etc/systemd/system/$brand-node-$username.service" <<EOL
