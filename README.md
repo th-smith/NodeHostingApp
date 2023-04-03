@@ -1,5 +1,14 @@
 # NodeHostingApp
-This Flask web application allows users to install, manage, and monitor services (called nodes) on a system running systemd. The main features of the app include:
+This Flask web application allows users to install, manage, and monitor services (called nodes) on a system running systemd. The nodes implemented in this Web App is delivered by Connect United projects.
+
+[Introducing Connect](https://web.connectunited.com/r/003711/video/v2)
+
+[Connect Explainer Video](https://web.connectunited.com/r/003711/video)
+
+### Sign up for a free account here:
+[Create Your Free Connect Account](https://web.connectunited.com/r/003711)
+
+The main features of the app include:
 
 Listing all nodes in a table, with information such as name, node, index, status (loaded, active, uptime), status message, and associated controls.
 Installing a new node by specifying the brand, username, email, password, and node number.
