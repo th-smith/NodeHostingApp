@@ -9,6 +9,7 @@ The app also includes a search function to filter nodes by username.
 
 To be able to "run" a node and receive rewards, it is required to own a node license. More information can be found here:
 [Introducing Connect](https://web.connectunited.com/r/003711/video/v2)
+
 [Connect Explainer Video](https://web.connectunited.com/r/003711/video)
 
 ### Sign up for a free account here:
