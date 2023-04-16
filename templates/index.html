@@ -46,7 +46,7 @@
     </script>
 </head>
 <body>
-  <h1>Registrer en ny Node</h1>
+  <h1>Register a new Node</h1>
   <form action="/install" method="POST">
     <table style="width: 50%;">
       <tr>
@@ -72,54 +72,54 @@
         </td>
       </tr>
       <tr>
-        <td style="text-align: right;"><label for="user">Brukernavn:</label></td>
+        <td style="text-align: right;"><label for="user">Username:</label></td>
         <td>
           <select id="userSel" name="userSel" onchange="filterByUser()">
-            <option>-- VELG BRUKER --</option>
+            <option>-- SELECT USER --</option>
             {% for service in services %}
               <option value="{{ service.name }}">{{ service.name }}</option>
             {% endfor %}
-          </select><br>Eller opprett ny bruker:<br><input id="user" type="text" name="user">&nbsp;(Ikke bruk bindestrek eller mellomrom)
+          </select><br>Or create a new user:<br><input id="user" type="text" name="user">&nbsp;(Don't use dash or space)
         </td>
       </tr>
       <tr>
-        <td style="text-align: right;"><label for="email">E-post:</label></td>
+        <td style="text-align: right;"><label for="email">E-mail:</label></td>
         <td><input id="email" type="text" name="email"></td>
       </tr>
       <tr>
-        <td style="text-align: right;"><label for="password">Passord:</label></td>
+        <td style="text-align: right;"><label for="password">Password:</label></td>
         <td><input id="password" type="password" name="password"></td>
       </tr>
       <tr>
-        <td style="text-align: right;"><label for="nodeindex">Nodenummer:</label></td>
+        <td style="text-align: right;"><label for="nodeindex">Node index:</label></td>
         <td><input id="nodeindex" type="text" name="nodeindex"></td>
       </tr>
       <tr>
         <td></td>
         <td>
-          <input type="submit" value="Installer">
+          <input type="submit" value="Install">
         </td>
       </tr>
     </table>
   </form>
-  <h1>Installerte Noder</h1>
+  <h1>Installed Nodes</h1>
   <table id="NodeListTable">
       <tr>
       <th>#</th>
-      <th>Navn&nbsp;<input type="text" id="userSearch" onkeyup="filterByUser()" placeholder="Søk.." size="10"></th>
+      <th>Name&nbsp;<input type="text" id="userSearch" onkeyup="filterByUser()" placeholder="Søk.." size="10"></th>
       <th>Node</th>
-      <th>Indeks</th>
+      <th>Index</th>
       <th>Loaded</th>
       <th>Active</th>
-      <th>Oppetid</th>
-      <th>Statusmelding</th>
+      <th>Runtime</th>
+      <th>Status message</th>
       <th><form action="/stopall" method="POST">
         <input type="submit" value="Stopp alle">
       </form></th>
       <th><form action="/restartall" method="POST">
         <input type="submit" value="Restart alle">
       </form></th>
-      <th>Slett</th>
+      <th>Delete</th>
       </tr>
       {% for service in services %}
       <tr class="{{ 'stopped' if service.active != 'Running' }}">
@@ -143,7 +143,7 @@
       </td>
       <td>
         <form action="/delete/{{ service.node }}/{{ service.name }}/{{ service.index }}" method="post">
-          <input type="submit" value="Slett">
+          <input type="submit" value="Delete">
         </form>
       </td>
       </tr>
@@ -180,7 +180,7 @@
       if (userTd && searchTd) {
         var userTxtValue = userTd.textContent || userTd.innerText;
         var searchTxtValue = searchTd.textContent || searchTd.innerText;
-        if ((userFilter === "-- VELG BRUKER --" || userTxtValue === userFilter) &&
+        if ((userFilter === "-- SELECT USER --" || userTxtValue === userFilter) &&
             searchTxtValue.toUpperCase().indexOf(searchFilter) > -1) {
           tr[i].style.display = "";
         } else {

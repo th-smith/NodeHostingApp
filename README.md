@@ -39,5 +39,14 @@ Open a web browser and navigate to http://localhost:5000 to access the Node Mana
 Contributing
 If you'd like to contribute to this project, please create a fork of the repository, make your changes, and submit a pull request.
 
+## Install the App
+<pre>
+cd install
+.\install.sh
+</pre>
+
+### Screenshot example of the running Flask App
+![Running App example](screenshots/screenshot-example-2023-04-16.png "Running App example")
+
 ## License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
