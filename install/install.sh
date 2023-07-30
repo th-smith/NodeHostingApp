@@ -27,7 +27,7 @@ After=network.target
 User=root
 WorkingDirectory=/opt/connect
 ExecStart=/usr/local/bin/gunicorn \
-            --timeout 120 \
+            --timeout 10000 \
             --workers 3 \
             --bind 0.0.0.0:5000 service:app
 

@@ -1,6 +1,7 @@
 # Copyright (C) 2023 Tommy H. Smith
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, Response
 from dateutil.parser import parse
+from time import sleep
 import subprocess
 import re
 import datetime
@@ -108,10 +109,35 @@ def disable_service(service_name):
     subprocess.run(["systemctl", "disable", service_name])
     return redirect("/")
 
-@app.route("/restartall", methods=["POST"])
+#@app.route("/restartall", methods=["POST"])
+#def restartall_service():
+#    subprocess.run(["systemctl", "restart", "*-node-*.service"])
+#    return redirect("/")
+@app.route("/restartall", methods=['GET', 'POST'])
 def restartall_service():
-    subprocess.run(["systemctl", "restart", "*-node-*.service"])
-    return redirect("/")
+    if request.method == 'POST':
+        services = get_services()
+        filtered_services = []
+        for service in services:
+            service_info = service.split()
+            if len(service_info) < 2:
+                continue
+            service_name = service_info[0]
+            if "-node-" not in service_name:
+                continue
+            filtered_services.append(service_name)
+        for service_name in filtered_services:
+            subprocess.run(["systemctl", "restart", service_name])
+            sleep(60)  # wait for 60 seconds before moving to the next service
+        return redirect("/")
+
+    elif request.method == 'GET':
+        def generate():
+            for service in services:
+                service.restart()
+                yield 'data: Restarted service: {}\n\n'.format(service.name)
+                time.sleep(60)
+        return Response(generate(), mimetype='text/event-stream')
 
 @app.route("/stopall", methods=["POST"])
 def stopall_service():

@@ -149,6 +149,7 @@
       </tr>
       {% endfor %}
   </table>
+  <div id="console-output" style="height:200px; width:100%; border:1px solid black; overflow:auto; white-space: pre-wrap;"></div>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       var dropdown = document.getElementById("userSel");
@@ -189,6 +190,20 @@
       }
     }
   }
+
+  // Create a new EventSource that listens for updates from /restartall route
+  var eventSource = new EventSource("/restartall");
+
+  // Define a function that runs whenever a new event is received
+  eventSource.onmessage = function(event) {
+      var consoleDiv = document.getElementById("console-output");
+
+      // Add the new data to the console output div
+      consoleDiv.textContent += event.data + "\n";
+
+      // Automatically scroll to the bottom of the div
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+  };
 
   </script>
 </body>
