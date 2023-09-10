@@ -113,11 +113,12 @@
       <th>Active</th>
       <th>Runtime</th>
       <th>Status message</th>
+      <th>Upgrade</th>
       <th><form action="/stopall" method="POST">
-        <input type="submit" value="Stopp alle">
+        <input type="submit" value="Stop all">
       </form></th>
       <th><form action="/restartall" method="POST">
-        <input type="submit" value="Restart alle">
+        <input type="submit" value="Restart all">
       </form></th>
       <th>Delete</th>
       </tr>
@@ -131,6 +132,11 @@
       <td class="{{ 'running' if service.active == 'Running' }}">{{ service.active }}</td>
       <td>{{ service.uptime }}</td>
       <td>{{ service.log }}</td>
+      <td>
+        <form action="/upgrade/{{ service.service_name }}" method="post">
+          <input type="submit" value="Upgrade">
+        </form>
+      </td>
       <td>
         <form action="/stop/{{ service.service_name }}" method="post">
           <input type="submit" value="Stop">
@@ -149,7 +155,6 @@
       </tr>
       {% endfor %}
   </table>
-  <div id="console-output" style="height:200px; width:100%; border:1px solid black; overflow:auto; white-space: pre-wrap;"></div>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       var dropdown = document.getElementById("userSel");
@@ -190,20 +195,6 @@
       }
     }
   }
-
-  // Create a new EventSource that listens for updates from /restartall route
-  var eventSource = new EventSource("/restartall");
-
-  // Define a function that runs whenever a new event is received
-  eventSource.onmessage = function(event) {
-      var consoleDiv = document.getElementById("console-output");
-
-      // Add the new data to the console output div
-      consoleDiv.textContent += event.data + "\n";
-
-      // Automatically scroll to the bottom of the div
-      consoleDiv.scrollTop = consoleDiv.scrollHeight;
-  };
 
   </script>
 </body>
