@@ -1,12 +1,17 @@
 # Copyright (C) 2023 Tommy H. Smith
-from flask import Flask, render_template, request, redirect, Response
+from flask import Flask, render_template, request, redirect, flash, Response
 from dateutil.parser import parse
-from time import sleep
 import subprocess
 import re
 import datetime
+import os
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY') or 'default-secret-key'
 
 def is_valid_date(date):
     if date:
@@ -77,6 +82,7 @@ def index():
 def install_node():
     if request.method == "POST":
         brand = request.form["brand"]
+        version = request.form["version"]
         user = request.form["user"]
         userSel = request.form["userSel"]
         email = request.form["email"]
@@ -85,7 +91,18 @@ def install_node():
         if len(user) == 0:
             user = userSel
         if len(user) > 0:
-            subprocess.run([f"./script/install-{brand}-node.sh", brand, user, email, password, nodeindex])
+            subprocess.run([f"./script/install-{brand}-{version}-node.sh", brand, user, email, password, nodeindex])
+    return redirect("/")
+
+@app.route("/upgrade/<brand>/<user>/<int:nodeindex>", methods=["POST"])
+def upgrade_node(brand, user, nodeindex):
+    try:
+        subprocess.run(["./script/upgrade-node.sh", brand, user, str(nodeindex)], check=True)
+        flash('Node upgraded successfully', 'success')
+    except subprocess.CalledProcessError as e:
+        flash(f'Node upgrade failed: {e}', 'danger')
+    except Exception as e:
+        flash(f'An unexpected error occurred: {e}', 'danger')
     return redirect("/")
 
 @app.route("/delete/<brand>/<user>/<int:nodeindex>", methods=["POST"])
