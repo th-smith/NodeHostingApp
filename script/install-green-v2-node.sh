@@ -47,8 +47,8 @@ chmod +x "$expectfile"
 
 #Download locations
 date=$(date +%s)
-domain="download.nerdunited.net"
-download_url="https://$domain/node-binaries/$brand/prod/${brand}_linux-amd64?$date"
+domain="download.prod.setpowerfree.com"
+download_url="https://$domain/node-binaries/2.6.1-b/$brand-2.6.1-b_linux-amd64?$date"
 node="/usr/local/bin/$brand-node-$username"
 
 #Remove old software
