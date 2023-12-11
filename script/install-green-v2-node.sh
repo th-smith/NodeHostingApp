@@ -31,13 +31,13 @@ echo "Installing $brand-node-$username.service (wait $((sleepdelay))s ..)"
 
 #Create config expect file
 expectfile="/home/$username/.$brand-node.exp"
-cat >"$expectfile" <<EOL
+cat > "$expectfile" <<EOL
 #!/usr/bin/expect
 spawn /usr/local/bin/$brand-node-$username config
 expect "Green Username or Email:"
 send "$email\r"
 expect "Green Password:"
-send "$password\r"
+send -- "$password\r"
 expect "Green Node Name:"
 send "$servicename\r"
 expect eof
@@ -52,7 +52,7 @@ download_url="https://$domain/node-binaries/2.6.1-b/$brand-2.6.1-b_linux-amd64?$
 node="/usr/local/bin/$brand-node-$username"
 
 #Remove old software
-rm -f $node
+#rm -f $node
 #Download node software
 wget --continue "$download_url" --output-document "$node" --quiet
 chmod +x "$node"
