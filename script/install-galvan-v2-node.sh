@@ -9,7 +9,7 @@ user=$2
 #echo "E-post"
 email=$3
 #echo "Passord"
-password="$4"
+password=$4
 #echo "Nodenummer"
 nodeindex=$5
 
@@ -31,15 +31,13 @@ echo "Installing $brand-node-$username.service (wait $((sleepdelay))s ..)"
 
 #Create config expect file
 expectfile="/home/$username/.$brand-node.exp"
-cat > "$expectfile" <<EOL
+cat >"$expectfile" <<EOL
 #!/usr/bin/expect
 spawn /usr/local/bin/$brand-node-$username config
-expect "Green Username or Email:"
+expect "Galvan Username:"
 send "$email\r"
-expect "Green Password:"
-send -- "$password\r"
-expect "Green Node Name:"
-send "$servicename\r"
+expect "Galvan Password:"
+send "$password\r"
 expect eof
 EOL
 chown $username /home/$username/.$brand-node.exp
@@ -47,8 +45,8 @@ chmod +x "$expectfile"
 
 #Download locations
 date=$(date +%s)
-domain="download.setpowerfree.com"
-download_url="https://$domain/node-binaries/v2.6.1-b/$brand-v2.6.1-b_linux-amd64?$date"
+domain="static.galvan.health"
+download_url="https://$domain/softnode/$brand-node_linux-amd64?$date"
 node="/usr/local/bin/$brand-node-$username"
 
 #Remove old software
