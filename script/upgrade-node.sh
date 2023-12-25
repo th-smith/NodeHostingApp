@@ -21,4 +21,4 @@ servicename="$brand-node-$user-$nodeindex.service"
 ./script/delete-node.sh $brand $user $nodeindex
 
 # Run the install script to upgrade the node
-./script/install-$brand-node.sh $brand $user $username $password $nodeindex
+./script/install-$brand-v2-node.sh $brand $user $username $password $nodeindex

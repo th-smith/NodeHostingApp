@@ -130,6 +130,7 @@
       <th>Active</th>
       <th>Runtime</th>
       <th>Status message</th>
+      <th>Version</th>
       <th>Upgrade</th>
       <th><form action="/stopall" method="POST">
         <input type="submit" value="Stop all">
@@ -149,11 +150,14 @@
       <td class="{{ 'running' if service.active == 'Running' }}">{{ service.active }}</td>
       <td>{{ service.uptime }}</td>
       <td>{{ service.log }}</td>
+      <td>{{ service.version_info }}</td>
       <td>
-        <form action="/upgrade/{{ service.node }}/{{ service.name }}/{{ service.index }}" method="post">
-          <!--<input type="submit" value="Upgrade">-->
-        </form>
-      </td>
+        {% if service.node == 'Green' %}
+          <form action="/upgrade/{{ service.node }}/{{ service.name }}/{{ service.index }}" method="post">
+            <input type="submit" value="Upgrade">
+          </form>
+        {% endif %}
+      </td>     
       <td>
         <form action="/stop/{{ service.node }}/{{ service.name }}/{{ service.index }}" method="post">
           <input type="submit" value="Stop">

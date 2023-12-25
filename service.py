@@ -27,6 +27,26 @@ def get_services():
     services = output.decode().strip().split("\n")
     return services
 
+def get_version(service_name):
+    base_service_name = os.path.basename(service_name)
+    binary_name = base_service_name.split('.service')[0]
+    try:
+        version_output = subprocess.check_output([f"/usr/local/bin/{binary_name}", "version"])
+        version_output = version_output.decode()
+
+        # Use regular expressions to extract version information
+        version_match = re.search(r'v[0-9a-zA-Z.-]+', version_output)
+        if version_match:
+            version_info = version_match.group(0)
+        else:
+            version_info = "Version not available"
+        
+    except subprocess.CalledProcessError as e:
+        # Handle the case where the version command fails for a service
+        version_info = "Version not available"
+    
+    return version_info
+
 def get_service_uptime(service_name):
     output = subprocess.check_output(["systemctl", "show", service_name, "--property=ExecMainStartTimestamp"])
     start_timestamp = output.decode().strip().split("=")[1].split(".")[0]
@@ -56,12 +76,15 @@ def index():
         row = row + 1
         loaded = service_info[1]
         active = "Running" if "running" in service else "Stopped"
-        #name = service_name.split("-node-")[1].split(".service")[0].split("-")[0].title()
         name = service_name.split("-node-")[1].split(".service")[0].split("-")[0]
         node = service_name.split("-node-")[0].title()
         index = int(service_name.split("-node-")[1].split(".service")[0].split("-")[-1])
         uptime = get_service_uptime(service_name)
         log = get_service_log(service_name).split("]:")[1]
+
+        # Retrieve the version information using the get_version function
+        version_info = get_version(service_name)
+
         filtered_services.append({
             "row": row,
             "service_name": service_name, 
@@ -71,11 +94,14 @@ def index():
             "node": node,
             "index": index,
             "uptime": uptime,
-            "log": log
+            "log": log,
+            "version_info": version_info  # Include the version information here
         })
+
         filtered_services.sort(key=lambda x: (x["name"] or "", x["node"] or "", x["index"] or ""))
         for i, service in enumerate(filtered_services):
             service["row"] = i + 1
+
     return render_template("index.html", services=filtered_services)
 
 @app.route("/install", methods=["GET", "POST"])
