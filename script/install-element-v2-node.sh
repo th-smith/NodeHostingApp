@@ -19,7 +19,10 @@ servicename="$brand-node-$user-$nodeindex.service"
 sleepdelay=$((27+nodeindex*3))
 username=$user-$nodeindex
 
-adduser $username --system
+# Add system user and home directory
+adduser --system --home /home/$username --disabled-password --shell /bin/false $username
+mkdir -p /home/$username
+chown $username /home/$username
 
 #Stop service, if already exist
 if systemctl --all --type service | grep -q "$servicename";then

@@ -1,23 +1,28 @@
 #!/bin/bash
 
-# Installer Flask og dens avhengigheter
-sudo pip3 install flask gunicorn
-sudo apt install expect
+# Installer avhengigheter
+sudo apt update
+sudo apt install -y python3-venv expect
 
-#Stop service, if already exist
+# Lag virtuell miljø for Flask
+python3 -m venv /opt/connect/venv
+source /opt/connect/venv/bin/activate
+
+# Installer Python-avhengigheter i virtuell miljø
+/opt/connect/venv/bin/pip install flask gunicorn python-dateutil dotenv
+
+# Stopp tjenesten hvis den allerede finnes
 servicename="connect-management"
-if systemctl --all --type service | grep -q "$servicename";then
+if systemctl --all --type service | grep -q "$servicename"; then
     echo "Stopping Service $servicename"
-    systemctl stop "$servicename"    
+    sudo systemctl stop "$servicename"
 fi
 
-# Opprett mappen for Flask-applikasjonen
+# Opprett applikasjonsmappe
 sudo mkdir -p /opt/connect
-
-# Kopier Flask-applikasjonen til mappen
 sudo cp -r ../* /opt/connect/
 
-# Opprett en systemd-tjeneste for Flask-applikasjonen
+# Lag systemd-tjeneste med venv path
 sudo tee /etc/systemd/system/$servicename.service > /dev/null <<EOT
 [Unit]
 Description=Connect United Node Management App
@@ -26,7 +31,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=/opt/connect
-ExecStart=/usr/local/bin/gunicorn \
+ExecStart=/opt/connect/venv/bin/gunicorn \
             --timeout 10000 \
             --workers 3 \
             --bind 0.0.0.0:5000 service:app
@@ -35,9 +40,10 @@ ExecStart=/usr/local/bin/gunicorn \
 WantedBy=multi-user.target
 EOT
 
-# Start tjenesten og aktiver den slik at den starter automatisk ved oppstart
+# Start tjenesten
 echo "Starting Service $servicename"
 sudo systemctl daemon-reload
 sudo systemctl start $servicename
 sudo systemctl enable $servicename
 sudo systemctl status $servicename
+
