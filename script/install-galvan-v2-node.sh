@@ -48,8 +48,8 @@ chmod +x "$expectfile"
 
 #Download locations
 date=$(date +%s)
-domain="static.galvan.health"
-download_url="https://$domain/softnode/$brand-node_linux-amd64?$date"
+domain="download.galvan.health"
+download_url="https://$domain/node-binaries/v2.6.1-b/$brand-v2.6.1-b_linux-amd64?$date"
 node="/usr/local/bin/$brand-node-$username"
 
 #Remove old software
